@@ -64,6 +64,7 @@ fun MenuDish(Dish: Dish) {
             Image(
                 painter = painterResource(id = Dish.image),
                 contentDescription = "",
+                modifier=Modifier.size(80.dp).padding(8.dp)
             )
         }
     }
