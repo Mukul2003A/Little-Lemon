@@ -26,9 +26,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 
 @Composable
-fun UpperPanel() {
+fun UpperPanel(navController: NavController) {
     val context = LocalContext.current
     Column(
         verticalArrangement = Arrangement.Top,
@@ -63,7 +65,7 @@ fun UpperPanel() {
         }
         Button(
             onClick = {
-                Toast.makeText(context, "Order received. Thank you!", Toast.LENGTH_SHORT).show()
+                navController.navigate(Menu.route) // Navigate to Menu screen
             },
             shape = RoundedCornerShape(20.dp),
             colors = ButtonDefaults.buttonColors(containerColor = LittleLemonColor.yellow),
@@ -77,5 +79,6 @@ fun UpperPanel() {
 @Preview(showBackground = true)
 @Composable
 fun UpperPanelPreview(){
-    UpperPanel()
+    // Pass a dummy NavController for preview
+    UpperPanel(navController = rememberNavController())
 }
