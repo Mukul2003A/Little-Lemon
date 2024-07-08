@@ -1,5 +1,3 @@
-package com.example.littlelemon
-
 import android.Manifest
 import android.app.Activity
 import android.content.Context
@@ -8,7 +6,14 @@ import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material3.Button
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -26,151 +31,212 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapView
-import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 
 @Composable
 fun LocationScreen() {
     val context = LocalContext.current
-    var address by remember { mutableStateOf("") }
-    var city by remember { mutableStateOf("") }
-    var postalCode by remember { mutableStateOf("") }
+    var fullName by remember { mutableStateOf("") }
+    var mobileNumber by remember { mutableStateOf("") }
+    var pincode by remember { mutableStateOf("") }
+    var addressLine1 by remember { mutableStateOf("") }
+    var addressLine2 by remember { mutableStateOf("") }
+    var landmark by remember { mutableStateOf("") }
+    var townCity by remember { mutableStateOf("") }
+    var state by remember { mutableStateOf("") }
+    var country by remember { mutableStateOf("") }
+    var makeDefaultAddress by remember { mutableStateOf(false) }
+
     var useManualEntry by remember { mutableStateOf(true) }
+    val mapView = rememberMapViewWithLifecycle()
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(16.dp)
     ) {
-        Text(
-            text = "Set Your Location",
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color(0xFF333333),
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
+        item {
+            Text(
+                text = "Set Your Address",
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color(0xFF333333),
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
+        }
 
-        Row {
-            Button(
-                onClick = { useManualEntry = true },
-                colors = ButtonDefaults.buttonColors(
-                    if (useManualEntry) LittleLemonColor.green else Color.LightGray
-                ),
-                modifier = Modifier.padding(8.dp)
-            ) {
-                Text("Enter Manually")
-            }
+        item {
+            Row {
+                Button(
+                    onClick = { useManualEntry = true },
+                    colors = ButtonDefaults.buttonColors(
+                        if (useManualEntry) MaterialTheme.colorScheme.primary else Color.LightGray
+                    ),
+                    modifier = Modifier.padding(8.dp)
+                ) {
+                    Text("Enter Manually")
+                }
 
-            Button(
-                onClick = { useManualEntry = false },
-                colors = ButtonDefaults.buttonColors(
-                    if (useManualEntry) Color.LightGray else LittleLemonColor.green
-                ),
-                modifier = Modifier.padding(8.dp)
-            ) {
-                Text("Select on Map")
+                Button(
+                    onClick = { useManualEntry = false },
+                    colors = ButtonDefaults.buttonColors(
+                        if (useManualEntry) Color.LightGray else MaterialTheme.colorScheme.primary
+                    ),
+                    modifier = Modifier.padding(8.dp)
+                ) {
+                    Text("Select on Map")
+                }
             }
         }
 
         if (useManualEntry) {
-            OutlinedTextField(
-                value = address,
-                onValueChange = { address = it },
-                label = { Text("Address") },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 8.dp)
-            )
-
-            OutlinedTextField(
-                value = city,
-                onValueChange = { city = it },
-                label = { Text("City") },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 8.dp)
-            )
-
-            OutlinedTextField(
-                value = postalCode,
-                onValueChange = { postalCode = it },
-                label = { Text("Postal Code") },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 16.dp)
-            )
-
-            Button(
-                onClick = {
-                    // Handle saving location
-                    Toast.makeText(context, "Location saved!", Toast.LENGTH_SHORT).show()
-                },
-                colors = ButtonDefaults.buttonColors(containerColor = LittleLemonColor.green)
-            ) {
-                Text(
-                    text = "Save Location",
-                    color = Color.White,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold
+            item {
+                OutlinedTextField(
+                    value = fullName,
+                    onValueChange = { fullName = it },
+                    label = { Text("Full Name") },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 8.dp)
                 )
             }
-        } else {
-            GoogleMapView()
-        }
-    }
-}
 
-@Composable
-fun GoogleMapView() {
-    val context = LocalContext.current
-    val mapView = rememberMapViewWithLifecycle()
-    val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
-    val activity = LocalContext.current as Activity
-
-    val launcher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestPermission()
-    ) { isGranted: Boolean ->
-        if (isGranted) {
-            if (ActivityCompat.checkSelfPermission(
-                    context,
-                    Manifest.permission.ACCESS_FINE_LOCATION
-                ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                    context,
-                    Manifest.permission.ACCESS_COARSE_LOCATION
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
-                return@rememberLauncherForActivityResult
+            item {
+                OutlinedTextField(
+                    value = mobileNumber,
+                    onValueChange = { mobileNumber = it },
+                    label = { Text("Mobile Number") },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 8.dp)
+                )
             }
-            fusedLocationClient.lastLocation.addOnSuccessListener { location: android.location.Location? ->
-                location?.let {
-                    mapView.getMapAsync { googleMap ->
-                        val latLng = LatLng(location.latitude, location.longitude)
-                        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15f))
-                        googleMap.addMarker(MarkerOptions().position(latLng).title("Current Location"))
-                    }
+
+            item {
+                OutlinedTextField(
+                    value = pincode,
+                    onValueChange = { pincode = it },
+                    label = { Text("Pincode") },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 8.dp)
+                )
+            }
+
+            item {
+                OutlinedTextField(
+                    value = addressLine1,
+                    onValueChange = { addressLine1 = it },
+                    label = { Text("Flat, House no., Building, Apartment") },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 8.dp)
+                )
+            }
+
+            item {
+                OutlinedTextField(
+                    value = addressLine2,
+                    onValueChange = { addressLine2 = it },
+                    label = { Text("Area, Street, Sector, Village") },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 8.dp)
+                )
+            }
+
+            item {
+                OutlinedTextField(
+                    value = landmark,
+                    onValueChange = { landmark = it },
+                    label = { Text("Landmark (e.g. near Apollo Hospital)") },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 8.dp)
+                )
+            }
+
+            item {
+                OutlinedTextField(
+                    value = townCity,
+                    onValueChange = { townCity = it },
+                    label = { Text("Town/City") },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 8.dp)
+                )
+            }
+
+            item {
+                OutlinedTextField(
+                    value = state,
+                    onValueChange = { state = it },
+                    label = { Text("State") },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 8.dp)
+                )
+            }
+
+            item {
+                OutlinedTextField(
+                    value = country,
+                    onValueChange = { country = it },
+                    label = { Text("Country/Region") },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 16.dp)
+                )
+            }
+
+            item {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                ) {
+                    Checkbox(
+                        checked = makeDefaultAddress,
+                        onCheckedChange = { makeDefaultAddress = it },
+                        modifier = Modifier.padding(end = 8.dp)
+                    )
+                    Text(
+                        text = "Make this my default address",
+                        fontSize = 14.sp,
+                        color = Color.Gray
+                    )
+                }
+            }
+
+            item {
+                Button(
+                    onClick = {
+                        // Handle saving address
+                        Toast.makeText(context, "Address saved!", Toast.LENGTH_SHORT).show()
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                ) {
+                    Text(
+                        text = "Save Address",
+                        color = Color.White,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold
+                    )
                 }
             }
         } else {
-            Toast.makeText(context, "Location permission denied", Toast.LENGTH_SHORT).show()
-        }
-    }
-
-    LaunchedEffect(mapView) {
-        launcher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
-    }
-
-    AndroidView({ mapView }) { mapView ->
-        mapView.getMapAsync { googleMap ->
-            googleMap.uiSettings.isZoomControlsEnabled = true
-            if (ActivityCompat.checkSelfPermission(
-                    context,
-                    Manifest.permission.ACCESS_FINE_LOCATION
-                ) == PackageManager.PERMISSION_GRANTED
-            ) {
-                googleMap.isMyLocationEnabled = true
+            item {
+                AndroidView({ mapView }) { mapView ->
+                    mapView.getMapAsync { googleMap ->
+                        googleMap.uiSettings.isZoomControlsEnabled = true
+                        if (ActivityCompat.checkSelfPermission(
+                                context,
+                                Manifest.permission.ACCESS_FINE_LOCATION
+                            ) == PackageManager.PERMISSION_GRANTED
+                        ) {
+                            googleMap.isMyLocationEnabled = true
+                        }
+                    }
+                }
             }
         }
     }
