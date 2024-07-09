@@ -14,6 +14,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -27,11 +28,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 
 val Categ = listOf("Lunch", "Dessert", "A La Carte", "Mains")
 
 @Composable
-fun LowerPanel() {
+fun LowerPanel(navController: NavController) {
     var selectedCategory by remember { mutableStateOf("All") }
 
     Column {
@@ -41,7 +43,7 @@ fun LowerPanel() {
             selectedCategory = selectedCategory,
             onCategorySelected = { selectedCategory = it }
         )
-        MenuDishes(selectedCategory = selectedCategory)
+        MenuDishes(selectedCategory = selectedCategory, navController = navController)
     }
 }
 
@@ -99,7 +101,7 @@ fun MenuCategory(
 }
 
 @Composable
-fun MenuDishes(selectedCategory: String) {
+fun MenuDishes(selectedCategory: String, navController: NavController) {
     val filteredDishes = if (selectedCategory == "All") {
         Dishes
     } else {
@@ -108,19 +110,27 @@ fun MenuDishes(selectedCategory: String) {
 
     LazyColumn {
         items(filteredDishes) { dish ->
-            MenuDishCard(dish)
+            MenuDishCard(dish, navController)
         }
     }
 }
 
 @Composable
-fun MenuDishCard(dish: Dish) {
-    Divider(
+fun MenuDishCard(dish: Dish, navController: NavController) {
+    HorizontalDivider(
         modifier = Modifier.padding(start = 8.dp, end = 8.dp),
-        color = LittleLemonColor.yellow,
-        thickness = 1.dp
+        thickness = 1.dp,
+        color = LittleLemonColor.yellow
     )
-    Card(colors = CardDefaults.cardColors(containerColor = Color.White)) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable {
+                // Navigate to DishDetails screen
+                navController.navigate("dishDetails/${dish.name}/${dish.price}/${dish.description}/${dish.image}/${dish.category}")
+            },
+        colors = CardDefaults.cardColors(containerColor = Color.White)
+    ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -153,15 +163,11 @@ fun MenuDishCard(dish: Dish) {
             )
         }
     }
-    Divider(
+    HorizontalDivider(
         modifier = Modifier.padding(start = 8.dp, end = 8.dp),
-        color = LittleLemonColor.yellow,
-        thickness = 1.dp
+        thickness = 1.dp,
+        color = LittleLemonColor.yellow
     )
 }
 
-@Preview(showBackground = true)
-@Composable
-fun LowerPanelPreview(){
-    LowerPanel()
-}
+

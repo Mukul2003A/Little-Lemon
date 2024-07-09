@@ -53,3 +53,8 @@ object Settings : TabbedDestinations {
     override val icon: Int? = null // No icon needed for Settings
     override val title = "Settings"
 }
+object Det : TabbedDestinations {
+    override val route = "det"
+    override val icon: Int? = null // No icon needed for Settings
+    override val title = "Det"
+}

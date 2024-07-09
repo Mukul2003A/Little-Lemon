@@ -33,7 +33,7 @@ fun HomeScreen(navController: NavController) {
             ) {
                 Column(Modifier.padding(it)) {
                     UpperPanel(navController) // Pass NavController to UpperPanel
-                    LowerPanel() // Pass NavController to LowerPanel
+                    LowerPanel(navController) // Pass NavController to LowerPanel
                 }
             }
         }

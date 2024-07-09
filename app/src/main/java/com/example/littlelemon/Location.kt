@@ -211,7 +211,19 @@ fun LocationScreen() {
                 Button(
                     onClick = {
                         // Handle saving address
-                        Toast.makeText(context, "Address saved!", Toast.LENGTH_SHORT).show()
+                        val savedAddress = buildString {
+                            append("Full Name: $fullName\n")
+                            append("Mobile Number: $mobileNumber\n")
+                            append("Pincode: $pincode\n")
+                            append("Address Line 1: $addressLine1\n")
+                            append("Address Line 2: $addressLine2\n")
+                            append("Landmark: $landmark\n")
+                            append("Town/City: $townCity\n")
+                            append("State: $state\n")
+                            append("Country: $country\n")
+                            append("Default Address: $makeDefaultAddress")
+                        }
+                        Toast.makeText(context, "Address saved!\n$savedAddress", Toast.LENGTH_LONG).show()
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
                 ) {

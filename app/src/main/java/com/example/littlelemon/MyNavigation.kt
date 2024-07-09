@@ -17,9 +17,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 
 @Composable
 fun MyNavigation() {
@@ -28,7 +30,7 @@ fun MyNavigation() {
         Box(Modifier.padding(it)) {
             NavHost(navController = navController, startDestination = Home.route) {
                 composable(Menu.route) {
-                    LowerPanel()
+                    LowerPanel(navController)
                 }
                 composable(Home.route) {
                     HomeScreen(navController = navController)
@@ -51,11 +53,35 @@ fun MyNavigation() {
                 composable("Settings") {
                     SettingsScreen(navController = navController)
                 }
+                composable(
+                    route = "dishDetails/{dishName}/{dishPrice}/{dishDescription}/{dishImage}/{dishCategory}",
+                    arguments = listOf(
+                        navArgument("dishName") { type = NavType.StringType },
+                        navArgument("dishPrice") { type = NavType.StringType },
+                        navArgument("dishDescription") { type = NavType.StringType },
+                        navArgument("dishImage") { type = NavType.IntType },
+                        navArgument("dishCategory") { type = NavType.StringType }
+                    )
+                ) { backStackEntry ->
+                    val dishName = backStackEntry.arguments?.getString("dishName") ?: ""
+                    val dishPrice = backStackEntry.arguments?.getString("dishPrice") ?: ""
+                    val dishDescription = backStackEntry.arguments?.getString("dishDescription") ?: ""
+                    val dishImage = backStackEntry.arguments?.getInt("dishImage") ?: 0
+                    val dishCategory = backStackEntry.arguments?.getString("dishCategory") ?: ""
 
+                    DishDetailsScreen(
+                        name = dishName,
+                        price = dishPrice,
+                        description = dishDescription,
+                        image = dishImage,
+                        category = dishCategory
+                    )
+                }
             }
         }
     }
 }
+
 
 
 
