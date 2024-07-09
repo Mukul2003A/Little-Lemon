@@ -18,6 +18,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
 
@@ -26,7 +27,7 @@ fun DishDetails(dish: Dish){
     Column(modifier = Modifier.padding(start = 10.dp, end = 10.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
         val drawerState = DrawerState(initialValue = DrawerValue.Closed)
         val scope = CoroutineScope(MainScope().coroutineContext)
-        TopAppBar(drawerState = drawerState, scope = scope)
+        TopAppBar(drawerState = drawerState, scope = scope, navController = rememberNavController())
         Image(painter = painterResource(id = dish.image), contentDescription = "", modifier = Modifier.fillMaxWidth(), contentScale = ContentScale.FillWidth)
         Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.Center) {
             Text(text = dish.name, style = MaterialTheme.typography.headlineMedium)

@@ -1,5 +1,6 @@
 package com.example.littlelemon
 
+
 import LocationScreen
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -35,10 +36,28 @@ fun MyNavigation() {
                 composable(Location.route) {
                     LocationScreen() // Use the updated LocationScreen
                 }
+                composable(Cart.route) {
+                    CartScreen()
+                }
+                composable("Profile") {
+                    ProfileScreen(navController = navController)
+                }
+                composable("Help") {
+                    HelpScreen(navController = navController)
+                }
+                composable("OrderHistory") {
+                    OrderHistoryScreen(navController = navController)
+                }
+                composable("Settings") {
+                    SettingsScreen(navController = navController)
+                }
+
             }
         }
     }
 }
+
+
 
 @Composable
 fun MyBottomNavigation(navController: androidx.navigation.NavController) {
@@ -52,7 +71,8 @@ fun MyBottomNavigation(navController: androidx.navigation.NavController) {
     }
     BottomNavigation() {
         tabbedDestinationsList.forEachIndexed { index, tabbedDestinations ->
-            BottomNavigationItem(label = { Text(text = tabbedDestinations.title) }, icon = { Icon(painter = painterResource(id = tabbedDestinations.icon), contentDescription = tabbedDestinations.title) },
+            BottomNavigationItem(label = { Text(text = tabbedDestinations.title) }, icon = { tabbedDestinations.icon?.let { painterResource(id = it) }
+                ?.let { Icon(painter = it, contentDescription = tabbedDestinations.title) } },
                 selected = index == selectedIndex.value,
                 onClick = {
                     selectedIndex.value = index
