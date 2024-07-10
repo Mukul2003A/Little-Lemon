@@ -259,7 +259,7 @@ fun LocationScreen() {
             }
         } else {
             item {
-                AndroidView({ mapView }) { mapView ->
+                AndroidView({ mapView }, modifier = Modifier.fillMaxWidth().height(600.dp)) { mapView ->
                     mapView.getMapAsync { googleMap ->
                         googleMap.uiSettings.isZoomControlsEnabled = true
                         if (ActivityCompat.checkSelfPermission(
