@@ -50,7 +50,29 @@ fun LocationScreen() {
 
     var useManualEntry by remember { mutableStateOf(true) }
     val mapView = rememberMapViewWithLifecycle()
-
+    val fusedLocationClient = remember { LocationServices.getFusedLocationProviderClient(context) }
+    val locationPermissionRequest = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission(),
+        onResult = { isGranted ->
+            if (isGranted) {
+                // Permission granted, fetch current location
+                fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+                    if (location != null) {
+                        val latLng = LatLng(location.latitude, location.longitude)
+                        // Show current location on the map
+                        mapView.getMapAsync { googleMap ->
+                            googleMap.clear()
+                            googleMap.addMarker(MarkerOptions().position(latLng).title("Current Location"))
+                            googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15f))
+                        }
+                    }
+                }
+            } else {
+                // Permission denied, show error message
+                Toast.makeText(context, "Location permission denied", Toast.LENGTH_SHORT).show()
+            }
+        }
+    )
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(16.dp)
@@ -246,6 +268,9 @@ fun LocationScreen() {
                             ) == PackageManager.PERMISSION_GRANTED
                         ) {
                             googleMap.isMyLocationEnabled = true
+                        }else {
+                            // Request location permission
+                            locationPermissionRequest.launch(Manifest.permission.ACCESS_FINE_LOCATION)
                         }
                     }
                 }
